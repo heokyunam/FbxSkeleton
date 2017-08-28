@@ -4,11 +4,11 @@
 #include <vector>
 
 using namespace std;
+using namespace cv;
 
 class FBXSkeleton : public FBXLoader
 {
 private:
-    cv::FileStorage* jointInfo;
     vector<FbxNode*> nodes;
 public:
     FBXSkeleton(const char* pFileName, int pWindowWidth, int pWindowHeight);
