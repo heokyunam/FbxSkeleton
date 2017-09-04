@@ -1,5 +1,5 @@
 
-#include "FBXLoader.h"
+#include "FBXSkeleton.h"
 #include <GL/glut.h>
 
 bool InitializeOpenGL();
@@ -7,7 +7,7 @@ void renderScene(void);
 void changeSize(int w, int h);
 void init();
 
-FBXLoader * gSceneContext;
+FBXSkeleton * gSceneContext;
 int main(int argc, char **argv) {
 
 
@@ -24,8 +24,8 @@ int main(int argc, char **argv) {
 
 	FbxString lFilePath("person.FBX");
 
-	gSceneContext = new FBXLoader(lFilePath, 800, 600);
-
+	gSceneContext = new FBXSkeleton(lFilePath, 800, 600);
+	gSceneContext->loadJointInfo("joint_prev.xml");
 
 
 	init();

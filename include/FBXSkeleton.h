@@ -2,6 +2,9 @@
 #include "FBXLoader.h"
 #include <opencv/cv.h>
 #include <vector>
+#include <string>
+#include <map>
+#include <NiTE.h>
 
 using namespace std;
 using namespace cv;
@@ -9,10 +12,14 @@ using namespace cv;
 class FBXSkeleton : public FBXLoader
 {
 private:
-    vector<FbxNode*> nodes;
+    map<string, FbxNode*> nodes;
+    nite::Skeleton& sk;
 public:
     FBXSkeleton(const char* pFileName, int pWindowWidth, int pWindowHeight);
     ~FBXSkeleton();
+    void updateSkeleton(nite::Skeleton& sk) {
+	this->sk = sk;
+    }
     void loadJointInfo(char* filename);
     void DrawNodeRecursive(FbxNode* pNode, FbxTime& pTime, FbxAnimLayer* pAnimLayer,
 		FbxAMatrix& pParentGlobalPosition, FbxPose* pPose);/*

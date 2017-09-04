@@ -22,15 +22,15 @@ void FBXSkeleton::loadJointInfo(char* filename)
 	    string value;
 	    sprintf(buffer, "Node%d", i);
 	    fs[buffer] >> value;
-	    nodes.push_back(this->Scene->FindNodeByName(value.c_str()));
+	    this->nodes[value] = this->Scene->FindNodeByName(value.c_str());
 	}
     
 }
 void FBXSkeleton::DrawNodeRecursive(FbxNode* pNode, FbxTime& pTime, FbxAnimLayer* pAnimLayer,
 		FbxAMatrix& pParentGlobalPosition, FbxPose* pPose)
 {
-	FbxAMatrix lGlobalPosition = GetGlobalPosition(pNode, pTime, pPose, &pParentGlobalPosition);
-
+	//FbxAMatrix lGlobalPosition = GetGlobalPosition(pNode, pTime, pPose, &pParentGlobalPosition);
+	FbxAMatrix lGlobalPosition = this->sk.getJoint((nite::JointType)nodes[pNode->GetName()]);
 	if (pNode->GetNodeAttribute())
 	{
 		// Geometry offset.
