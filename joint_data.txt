@@ -1,0 +1,29 @@
+TORSO eChestOrigin
+HEAD eHead
+
+RIGHTSHOULDER eRightShoulder
+RIGHTELBOW eRightElbow
+RIGHTHAND eRightHand
+
+LEFTSHOULDER eLeftShoulder
+LEFTELBOW eLeftElbow
+LEFTHAND eLeftHand
+
+RIGHTHIP eHips
+RIGHTKNEE eRightKnee
+RIGHTKNEE_TO_RIGHTFOOT eRightAnkle
+RIGHTFOOT eRightFoot
+
+LEFTHIP eHips
+LEFTKNEE eLeftKnee
+LEFTKNEE_TO_LEFTFOOT eLeftAnkle
+LEFTFOOT eLeftFoot
+
+
+
+
+
+
+
+
+

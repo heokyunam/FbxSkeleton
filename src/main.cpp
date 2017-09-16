@@ -1,5 +1,6 @@
 
 #include "FBXSkeleton.h"
+#include "simpletracker.h"
 #include <GL/glut.h>
 
 bool InitializeOpenGL();
@@ -8,27 +9,27 @@ void changeSize(int w, int h);
 void init();
 
 FBXSkeleton * gSceneContext;
+SimpleTracker tracker;
+int value = 0;
 int main(int argc, char **argv) {
-
-
-
 	// init GLUT and create window	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(800,600);
 	glutCreateWindow("FBX Loading");
-
+	
 	// Initialize OpenGL.
 	const bool lSupportVBO = InitializeOpenGL();
-
-	FbxString lFilePath("person.FBX");
+	tracker.init();
+	FbxString lFilePath("human3.FBX");
 
 	gSceneContext = new FBXSkeleton(lFilePath, 800, 600);
-	gSceneContext->loadJointInfo("joint_prev.xml");
-
-
+	//gSceneContext->InitControlSet();
+	//updateJoint를 해야함. 결국 합쳐야됨
+	
 	init();
+	gSceneContext->loadJointInfo("joint.txt");
 	// register callbacks
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
@@ -118,7 +119,12 @@ void renderScene(void)   //to do render here..
 		0.0f, 1.0f,  0.0f);
 
 	glScalef(0.2,0.2,0.2);
+	value += 1;
+	glRotatef(value, 0, 1, 0);
+	
+	gSceneContext->updateSkeleton(tracker.getSkeleton());
 	gSceneContext->Draw();   //<<----------draw from library..
+	
 	glutSwapBuffers();
 } 
 

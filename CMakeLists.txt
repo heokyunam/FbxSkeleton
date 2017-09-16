@@ -8,6 +8,7 @@ set(SOURCES
   src/main.cpp
   src/targa.cxx
   src/FBXSkeleton.cpp
+  src/simpletracker.cpp
 )
 
 set(TEST
@@ -34,6 +35,11 @@ include_directories( ${GLFW3_INCLUDE_DIRS} )
 LIST( APPEND LIBRARIES ${GLFW3_LIBRARIES} )
 LIST( APPEND LIBRARIES ${OPENGL_gl_LIBRARY} )
 LIST( APPEND LIBRARIES "~/GP/fbxsdk/libfbxsdk.so" )
+
+include_directories( ${OPENNI2_INCLUDE_DIRS} )
+include_directories( ${OPENNI_NITE_INCLUDE_DIRS} )
+LIST( APPEND LIBRARIES ${OPENNI2_LIBRARY} )
+LIST( APPEND LIBRARIES ${OPENNI_NITE_LIBRARY} )
 
 find_package( OpenNI2 REQUIRED )
 find_package( Openni-nite REQUIRED )

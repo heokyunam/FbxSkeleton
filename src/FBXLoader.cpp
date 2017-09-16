@@ -1,6 +1,7 @@
 #pragma once
 #include "FBXLoader.h"
 #include <stdio.h>
+#include <string>
 
 FBXLoader::FBXLoader(const char * pFileName, int pWindowWidth, int pWindowHeight)
 	: mFileName(pFileName),SdkManager(NULL), Scene(NULL),Importer(NULL), CurrentAnimLayer(NULL),SelectedNode(NULL),
@@ -9,7 +10,6 @@ FBXLoader::FBXLoader(const char * pFileName, int pWindowWidth, int pWindowHeight
 {
 	if (mFileName == NULL)
 		mFileName = NULL;
-
 	// initialize cache start and stop time
 	mCache_Start = FBXSDK_TIME_INFINITE;
 	mCache_Stop  = FBXSDK_TIME_MINUS_INFINITE;
@@ -303,7 +303,6 @@ void FBXLoader::LoadCacheRecursive(FbxScene * pScene, FbxAnimLayer * pAnimLayer,
 {
 	// Load the textures into GPU, only for file texture now
 	const int lTextureCount = pScene->GetTextureCount();
-	printf("[FBXLoader - LoadCacheRecursive(FbxScene *)] debug 1\n");
 	for (int lTextureIndex = 0; lTextureIndex < lTextureCount; ++lTextureIndex)
 	{
 		FbxTexture * lTexture = pScene->GetTexture(lTextureIndex);
@@ -382,12 +381,11 @@ bool FBXLoader::LoadFile()
 {
 	bool lResult = false;
 	// Make sure that the scene is ready to load.
-
 	if (Importer->Import(Scene) == true)
 	{
 		// Set the scene status flag to refresh 
 		// the scene in the first timer callback.
-
+		
 		// Convert Axis System to what is used in this example, if needed
 		FbxAxisSystem SceneAxisSystem = Scene->GetGlobalSettings().GetAxisSystem();
 		FbxAxisSystem OurAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
@@ -432,6 +430,7 @@ bool FBXLoader::LoadFile()
 
 		//printf("[FBXLoader - LoadFile()] debug3\n");
 		lResult = true;
+		
 	}
 	else
 	{
@@ -563,15 +562,18 @@ bool FBXLoader::Draw()
 void FBXLoader::DrawNodeRecursive(FbxNode* pNode, FbxTime& pTime, FbxAnimLayer* pAnimLayer,
 								  FbxAMatrix& pParentGlobalPosition, FbxPose* pPose)
 {
+	//여기서 TRS를 받고 처리하는 것으로 추정됨
+	//parent까지 받고 처리함
 	FbxAMatrix lGlobalPosition = GetGlobalPosition(pNode, pTime, pPose, &pParentGlobalPosition);
-
+	//FbxVector4 zero(0,0,0,0);//heokyunam
+	//lGlobalPosition.SetT(zero);
 	if (pNode->GetNodeAttribute())
 	{
 		// Geometry offset.
 		// it is not inherited by the children.
 		FbxAMatrix lGeometryOffset = GetGeometry(pNode);
-		FbxAMatrix lGlobalOffPosition = lGlobalPosition * lGeometryOffset;
-
+		FbxAMatrix lGlobalOffPosition = lGlobalPosition * lGeometryOffset;//lGolbalPosition으로 변환됨
+		
 		DrawNode(pNode, pTime, pAnimLayer, pParentGlobalPosition, lGlobalOffPosition, pPose);
 	}
 
@@ -580,7 +582,6 @@ void FBXLoader::DrawNodeRecursive(FbxNode* pNode, FbxTime& pTime, FbxAnimLayer* 
 	{
 		DrawNodeRecursive(pNode->GetChild(lChildIndex), pTime, pAnimLayer, lGlobalPosition, pPose);
 	}
-
 }
 
 
@@ -659,7 +660,7 @@ FbxAMatrix FBXLoader::GetGeometry(FbxNode* pNode)
 	const FbxVector4 lT = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
 	const FbxVector4 lR = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
 	const FbxVector4 lS = pNode->GetGeometricScaling(FbxNode::eSourcePivot);
-
+	
 	return FbxAMatrix(lT, lR, lS);
 }
 
@@ -676,6 +677,7 @@ void FBXLoader::DrawNode(FbxNode* pNode, FbxTime& pTime,FbxAnimLayer* pAnimLayer
 		// NURBS and patch have been converted into triangluation meshes.
 		else if (lNodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 		{
+			//printf("Mesh %s %f\n", pNode->GetName(), pGlobalPosition.GetT());//heokyunam
 			DrawMesh(pNode, pTime, pAnimLayer, pGlobalPosition, pPose);
 		}
 		else if (lNodeAttribute->GetAttributeType() == FbxNodeAttribute::eNull)
@@ -693,7 +695,7 @@ void FBXLoader::DrawNode(FbxNode* pNode, FbxTime& pTime,FbxAnimLayer* pAnimLayer
 void FBXLoader::DrawSkeleton(FbxNode* pNode, FbxAMatrix& pParentGlobalPosition, FbxAMatrix& pGlobalPosition)
 {
 	FbxSkeleton* lSkeleton = (FbxSkeleton*) pNode->GetNodeAttribute();
-
+	
 	// Only draw the skeleton if it's a limb node and if 
 	// the parent also has an attribute of type skeleton.
 	if (lSkeleton->GetSkeletonType() == FbxSkeleton::eLimbNode &&
@@ -731,8 +733,8 @@ void FBXLoader::DrawMesh(FbxNode* pNode, FbxTime& pTime, FbxAnimLayer* pAnimLaye
 	{
 		lVertexArray = new FbxVector4[lVertexCount];
 		memcpy(lVertexArray, lMesh->GetControlPoints(), lVertexCount * sizeof(FbxVector4));
+// 		printf("DrawMesh %s %d : %f %f %f\n", pNode->GetName(), lVertexCount, lVertexArray[0][1], lVertexArray[1][1], lVertexArray[2][1]);//heokyunam
 	}
-
 	if (lHasDeformation)
 	{
 		// Active vertex cache deformer will overwrite any other deformer
@@ -1013,6 +1015,7 @@ void FBXLoader::ComputeSkinDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMe
 	FbxSkin * lSkinDeformer = (FbxSkin *)pMesh->GetDeformer(0, FbxDeformer::eSkin);
 	FbxSkin::EType lSkinningType = lSkinDeformer->GetSkinningType();
 
+	
 	if(lSkinningType == FbxSkin::eLinear || lSkinningType == FbxSkin::eRigid)
 	{
 		ComputeLinearDeformation(pGlobalPosition, pMesh, pTime, pVertexArray, pPose);
@@ -1160,8 +1163,7 @@ void FBXLoader::ComputeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* p
 }
 
 
-void FBXLoader::ComputeClusterDeformation(FbxAMatrix& pGlobalPosition, 
-										  FbxMesh* pMesh,FbxCluster* pCluster, FbxAMatrix& pVertexTransformMatrix,FbxTime pTime, FbxPose* pPose)
+void FBXLoader::ComputeClusterDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMesh,FbxCluster* pCluster, FbxAMatrix& pVertexTransformMatrix,FbxTime pTime, FbxPose* pPose)
 {
 
 	FbxCluster::ELinkMode lClusterMode = pCluster->GetLinkMode();
@@ -1421,6 +1423,8 @@ void FBXLoader::InitializeSdkObjects(FbxManager*& pManager, FbxScene*& pScene)
 
 	//Create an FBX scene. This object holds most objects imported/exported from/to files.
 	pScene = FbxScene::Create(pManager, "My Scene");
+	//int index = pScene->CreateCharacter("human");//heokyunam
+	//printf("character Index : %d\n", index);//heokyunam
 	if( !pScene )
 	{
 		FBXSDK_printf("Error: Unable to create FBX scene!\n");

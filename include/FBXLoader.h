@@ -37,7 +37,7 @@ public:
 
 	bool LoadTextureFromFile(const FbxString & pFilePath, unsigned int & pTextureObject);//done
 
-	void LoadCacheRecursive(FbxNode * pNode, FbxAnimLayer * pAnimLayer, bool pSupportVBO);//done
+	virtual void LoadCacheRecursive(FbxNode * pNode, FbxAnimLayer * pAnimLayer, bool pSupportVBO);//done
 
 	void UnloadCacheRecursive(FbxNode * pNode); //done
 
@@ -60,7 +60,7 @@ public:
 
 	FbxAMatrix GetPoseMatrix(FbxPose* pPose, int pNodeIndex);
 
-	FbxAMatrix GetGeometry(FbxNode* pNode);
+	virtual FbxAMatrix GetGeometry(FbxNode* pNode);
 
 	virtual void DrawNode(FbxNode* pNode, FbxTime& pTime,FbxAnimLayer* pAnimLayer,FbxAMatrix& pParentGlobalPosition,
 		FbxAMatrix& pGlobalPosition,FbxPose* pPose);
