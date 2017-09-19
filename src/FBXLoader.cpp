@@ -1079,11 +1079,16 @@ void FBXLoader::ComputeLinearDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* p
 	for ( int lSkinIndex=0; lSkinIndex<lSkinCount; ++lSkinIndex)
 	{
 		FbxSkin * lSkinDeformer = (FbxSkin *)pMesh->GetDeformer(lSkinIndex, FbxDeformer::eSkin);
-
 		int lClusterCount = lSkinDeformer->GetClusterCount();
 		for ( int lClusterIndex=0; lClusterIndex<lClusterCount; ++lClusterIndex)
 		{
 			FbxCluster* lCluster = lSkinDeformer->GetCluster(lClusterIndex);
+			/*
+			FbxAMatrix mat;
+			lCluster->GetTransformMatrix(mat);
+			mat.SetT(FbxVector4(0,2,0,3));
+			lCluster->SetTransformMatrix(mat);*/
+			
 			if (!lCluster->GetLink())
 				continue;
 
@@ -1299,6 +1304,7 @@ void FBXLoader::ComputeDualQuaternionDeformation(FbxAMatrix& pGlobalPosition,
 		for ( int lClusterIndex=0; lClusterIndex<lClusterCount; ++lClusterIndex)
 		{
 			FbxCluster* lCluster = lSkinDeformer->GetCluster(lClusterIndex);
+			
 			if (!lCluster->GetLink())
 				continue;
 

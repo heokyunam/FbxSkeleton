@@ -9,7 +9,7 @@ void changeSize(int w, int h);
 void init();
 
 FBXSkeleton * gSceneContext;
-SimpleTracker tracker;
+
 int value = 0;
 int main(int argc, char **argv) {
 	// init GLUT and create window	
@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
 	
 	// Initialize OpenGL.
 	const bool lSupportVBO = InitializeOpenGL();
-	tracker.init();
+	
 	FbxString lFilePath("human3.FBX");
 
 	gSceneContext = new FBXSkeleton(lFilePath, 800, 600);
@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
 	
 	init();
 	gSceneContext->loadJointInfo("joint.txt");
+	gSceneContext->updateSkeleton("joint_data.txt");
 	// register callbacks
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
@@ -122,7 +123,6 @@ void renderScene(void)   //to do render here..
 	value += 1;
 	glRotatef(value, 0, 1, 0);
 	
-	gSceneContext->updateSkeleton(tracker.getSkeleton());
 	gSceneContext->Draw();   //<<----------draw from library..
 	
 	glutSwapBuffers();

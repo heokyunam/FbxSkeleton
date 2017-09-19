@@ -17,5 +17,6 @@ public:
     ~FBXSkeleton();
     void updateSkeleton(const nite::Skeleton& sk);
     void updateSkeleton(vector<float*> sk);
+    void updateSkeleton(char* filename);
     void loadJointInfo(char* filename);
 };
